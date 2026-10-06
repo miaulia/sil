@@ -6,11 +6,56 @@ root = { item } ;
 item = const definition
      | func definition
      | type definition
-     | interface definition ;
+     | interface definition
+     | interface implementation ;
 
-const definition = "const", lowercase name, "=", expression ;
+const definition = "const",
+                   common name,
+                   [ type ],
+                   [ "=", expression ],
+                   ";" ;
 
-func definition = "func", [ parameters ], lowercase name, [ type parameters ], parameters, [ type ], body ;
+func definition = "func",
+                  [ parameters ],
+                  common name,
+                  [ type parameters ],
+                  parameters,
+                  [ type ],
+                  [ with clause ],
+                  ( body | ";" ) ;
+
+type definition = "type",
+                  proper name,
+                  [ type parameters ],
+                  ( "=", type, ";"
+                  | [ parameters ], [ with clause ], ";"
+                  | [ type ],
+                    [ with clause ],
+                    "{",
+                    { common name,
+                      [ "=", expression
+                      | parameters ],
+                      ";" },
+                    "}" ) ;
+
+interface definition = "interface",
+                       proper name,
+                       [ type parameters ],
+                       [ with clause ],
+                       "{",
+                       { item },
+                       "}" ;
+
+interface implementation = "implement",
+                           qualified proper name,
+                           [ with clause ],
+                           "{",
+                           { item },
+                           "}" ;
+
+qualified proper name = { proper name, "." },
+                        proper name,
+                        [ type arguments ] ;
 
 (* OLD VERSION BELOW *)
 
