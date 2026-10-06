@@ -93,3 +93,11 @@ func (h Holder) run() {
 		handler.handle();
 	}
 }
+
+// private stuff exists
+priv func im_priv() {
+	// ya
+}
+
+// including fields
+type Secret(priv secret Int);
