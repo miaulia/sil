@@ -1,88 +1,95 @@
-def main() {
-    println("Hello, world!");
+func main() {
+	// you need a keyword for setting local vars
+	let x = 0;
+	// thats so that it really stands out.
+	set x = 1;
 }
 
-def math .{
-    def pi: 3.14
+type Add[t] = func(x t, y t) t;
 
-    // first-order Taylor series approximation ;)
-    def sin(val x f32): x
+type Vector(x Int, y Int);
+
+type Expr[t] {
+	add(Expr[t], Expr[t]);
+	val(t);
 }
 
-def println(val s str) {
-    syscall.outp(s);
+func (e Expr[t]) eval() t
+with Number[t]
+{
+	if e is {
+		Expr.add(a, b) {
+			a.Number.add(b)
+		}
+		Expr.val(a) {
+			a
+		}
+	}
 }
 
-def fizzbuzz() {
-    for var i = 1; i <= 100; set i += 1 {
-        if i % 15 = 0 {
-            println("Fizz Buzz");
-        } else i % 3 = 0 {
-            println("Fizz");
-        } else i % 5 = 0 {
-            println("Buzz");
-        } else {
-            println(i);
-        }
-    }
+type BenefitType {
+	ssi = 0;
+	ssdi = 1;
 }
 
-def Vector (
-    .x s32,
-    .y s32,
-)
+const pi = 3.14;
 
-def dot(val a Vector, val b Vector) -> Int: a.x * b.x + a.y * b.y
-
-def Expr
-    .Add(Expr, Expr)?
-    .Neg(Expr)?
-    .Val(s32)?
-
-def Stringable on any .{
-    def string() -> String
+func pair(a Int, b Int) type(x Int, y Int) {
+	type(x = a, y = b)
 }
 
-ext Stringable on Vector .{
-    def string(): "This is the vector type! Not a value but you can still implement Stringable :P"
+func get_sign(x Int) type{neg; zero; pos} {
+	type.neg
 }
 
-ext Stringable on (val v Vector) .{
-    def string(): "(\(v.x), \(v.y))"
+func i_take_anon(call_me func() Int) Int {
+	call_me()
 }
 
-def Monad on (val Self type -> type) .{
-    def make[A](val a A) -> Self(A)
-    
-    ext[A] on (val a Self(A)) .{
-        def map[B](val b A -> Self(B)) -> Self(B)
-        def and[B](val b Self(B)) -> Self(B)
-    }
+func i_pass_anon() {
+	i_take_anon(func() { 0 });
+	i_take_anon(func() 0);
 }
 
-def Option[T]
-    .Some(T)?
-    .None?
-
-ext Monad on Option .{
-    def make[A](val a A):
-        Option.Some(a)
-
-    ext[A] on (val a Option[A]) .{
-        def map[B](val b A -> Option[B]):
-            if Option.Some(val a) = a:
-                b(a)
-            else:
-                Option.None
-
-        def and[B](val b Option[B]):
-            if Option.Some(_) = a:
-                b
-            else:
-                Option.None
-    }
+interface Number[t] {
+	type Output;
+	const zero t;
+	func (lhs t) add(rhs t) Output;
 }
 
-def Encodable on _ .{
-    def opcode -> Opcode
+implement Number[t] {
+	type Output = Int;
+	const zero Int = 0;
+	func (lhs Int) add(rhs Int) Int {
+		lhs + rhs
+	}
+}
+
+// Requiring others, empty interfaces
+interface A[t]
+with B[t]
+{}
+
+interface B[t] {}
+
+implement A[t]
+with B[t]
+{}
+
+implement B[t] {}
+
+// for the demonstration below
+interface Handler[t] {
+	func (t) handle();
+}
+
+// its like dyn types in rust. t is any type.
+// with turns it into a fat pointer. or something like
+// that. yea lets say that.
+type Holder(handlers List[t with Handler[t]]);
+
+func (h Holder) run() {
+	for handler in h.handlers {
+		handler.handle();
+	}
 }
