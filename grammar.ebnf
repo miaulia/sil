@@ -1,6 +1,19 @@
 (* A grammar used as reference when building the parser. *)
 (* It's probably out of date. *)
 
+root = { item } ;
+
+item = const definition
+     | func definition
+     | type definition
+     | interface definition ;
+
+const definition = "const", lowercase name, "=", expression ;
+
+func definition = "func", [ parameters ], lowercase name, [ type parameters ], parameters, [ type ], body ;
+
+(* OLD VERSION BELOW *)
+
 root = scope ;
 
 scope = { cmp, ";" | definition | term-selection | term-iteration },
