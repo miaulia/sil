@@ -3,59 +3,57 @@
 
 root = { item } ;
 
-item = const definition
-     | func definition
-     | type definition
-     | interface definition
-     | interface implementation ;
+item = const defn
+     | func defn
+     | type defn
+     | interface defn
+     | interface impl ;
 
-const definition = "const",
-                   common name,
-                   [ type ],
-                   [ "=", expression ],
-                   ";" ;
+const defn = "const",
+             common name,
+             [ type ],
+             ( "=", expression | hole )
+             ";" ;
 
-func definition = "func",
-                  [ parameters ],
-                  common name,
-                  [ type parameters ],
-                  parameters,
-                  [ type ],
-                  [ with clause ],
-                  ( body | ";" ) ;
+func defn = "func",
+            [ parameters ],
+            common name,
+            [ type parameters ],
+            parameters,
+            [ type ],
+            [ with clause ],
+            ( body | hole, ";" ) ;
 
-type definition = "type",
-                  proper name,
-                  [ type parameters ],
-                  ( "=", type, ";"
-                  | [ parameters ], [ with clause ], ";"
-                  | [ type ],
-                    [ with clause ],
-                    "{",
-                    { common name,
-                      [ "=", expression
-                      | parameters ],
-                      ";" },
-                    "}" ) ;
+type defn = "type",
+            proper name,
+            [ type parameters ],
+            ( "=", type, ";"
+            | parameters, [ with clause ], ";"
+            | [ type ], [ with clause ], "{", { type defn case }, "}"
+            | hole, [ with clause ], ";" ) ;
 
-interface definition = "interface",
-                       proper name,
-                       [ type parameters ],
-                       [ with clause ],
-                       "{",
-                       { item },
-                       "}" ;
+type defn case = commmon name,
+                 [ "=", expression | parameters ],
+                 ";" ;
 
-interface implementation = "implement",
-                           qualified proper name,
-                           [ with clause ],
-                           "{",
-                           { item },
-                           "}" ;
+interface defn = "interface",
+                 proper name,
+                 [ type parameters ],
+                 [ with clause ],
+                 "{",
+                 { item },
+                 "}" ;
 
-qualified proper name = { proper name, "." },
-                        proper name,
-                        [ type arguments ] ;
+interface impl = "implement",
+                 { proper name, "." },
+                 proper name,
+                 [ type arguments ],
+                 [ with clause ],
+                 "{",
+                 { item },
+                 "}" ;
+
+hole = (* a hole, in an interface item, to be filled by implementation *) ;
 
 (* OLD VERSION BELOW *)
 
